@@ -1,57 +1,46 @@
 # IronVision
 
-Advanced threat detection and security monitoring platform designed to identify and neutralize threats in real-time with machine learning-powered analytics.
+Advanced real-time object detection and recognition system powered by YOLOv8n for precise and efficient computer vision analysis.
 
 ## Overview
 
-IronVision is a cutting-edge security platform that leverages artificial intelligence and behavioral analysis to detect anomalies and threats across your infrastructure. With real-time threat intelligence and automated response capabilities, IronVision provides comprehensive security visibility.
+IronVision is a high-performance object detection application utilizing YOLOv8 Nano (YOLOv8n) model for real-time computer vision tasks. It provides fast, accurate object detection with a lightweight footprint suitable for edge devices and mobile applications.
 
 ## Features
 
-🎯 **Advanced Threat Detection**
-- AI-powered anomaly detection
-- Behavioral analysis engine
-- Pattern recognition for known threats
-- Zero-day threat identification
+🎯 **YOLOv8n Object Detection**
+- State-of-the-art object detection model
+- Real-time performance on edge devices
+- High accuracy with minimal latency
 
-🔍 **Real-Time Monitoring**
-- Continuous network monitoring
-- System behavior tracking
-- Process-level visibility
-- File integrity monitoring
+⚡ **High Performance**
+- Optimized for speed and accuracy balance
+- Lightweight model (nano variant)
+- Efficient resource utilization
 
-🤖 **Machine Learning Analytics**
-- Intelligent threat scoring
-- Automated classification
-- Predictive threat analysis
-- Adaptive learning algorithms
+🔌 **Server Integration**
+- REST API for detection requests
+- WebSocket support for real-time streams
+- Batch processing capabilities
 
-🚨 **Automated Response**
-- Instant threat alerts
-- Automated containment actions
-- Incident response automation
-- Integration with security tools
+📊 **Comprehensive Analysis**
+- Multi-object detection
+- Confidence scoring
+- Bounding box coordinates
+- Class categorization
 
-🛡️ **Security Dashboard**
-- Comprehensive threat visualization
-- Risk scoring and metrics
-- Incident timeline tracking
-- Compliance reporting
-
-📊 **Intelligence & Reporting**
-- Threat intelligence feeds
-- Custom report generation
-- Audit trails
-- Compliance documentation
+🌐 **Cross-Platform**
+- Client-server architecture
+- Multiple client support
+- Scalable deployment
 
 ## Quick Start
 
 ### Prerequisites
 
-- Python 3.9 or higher
-- Node.js 14.0+ (for frontend)
-- Docker (recommended)
-- 8GB RAM minimum
+- Python 3.8 or higher
+- CUDA 11.8+ (optional, for GPU acceleration)
+- pip or poetry package manager
 - Git
 
 ### Installation
@@ -60,44 +49,43 @@ IronVision is a cutting-edge security platform that leverages artificial intelli
 # Clone the repository
 git clone https://github.com/axilyaai/IronVision.git
 
-# Navigate to the project directory
+# Navigate to directory
 cd IronVision
 
-# Create virtual environment (Python)
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-npm install  # For frontend components
 ```
 
 ### Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file:
 
 ```env
 ENVIRONMENT=development
-DEBUG=True
-SECRET_KEY=your-secret-key-here
-DATABASE_URL=postgresql://user:password@localhost:5432/ironvision
-REDIS_URL=redis://localhost:6379
-ML_MODEL_PATH=./models/
-ALERT_WEBHOOK_URL=https://your-webhook.com
-LOG_LEVEL=INFO
+PORT=8000
+YOLO_MODEL=yolov8n
+CONFIDENCE_THRESHOLD=0.5
+IOU_THRESHOLD=0.4
+DEVICE=cpu  # or cuda for GPU
+MAX_DETECTIONS=100
 ```
 
-### Running IronVision
+### Running the Application
 
 ```bash
-# Development mode
-python manage.py runserver
+# Start detection server
+python main.py
 
-# Production mode with gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 app:application
+# Start with GPU (if available)
+DEVICE=cuda python main.py
 
-# Start with Docker Compose
-docker-compose up
+# Run with specific model size
+# yolov8n (nano), yolov8s (small), yolov8m (medium), yolov8l (large)
+YOLO_MODEL=yolov8s python main.py
 ```
 
 ## Project Structure
@@ -106,27 +94,22 @@ docker-compose up
 IronVision/
 ├── src/
 │   ├── detection/
-│   │   ├── ml_models/
-│   │   ├── threat_analyzer.py
-│   │   └── patterns.py
-│   ├── monitoring/
-│   │   ├── collectors/
-│   │   └── sensors.py
+│   │   ├── yolo_detector.py
+│   │   ├── model_loader.py
+│   │   └── post_processing.py
 │   ├── api/
-│   │   ├── routes/
+│   │   ├── routes.py
+│   │   ├── schemas.py
 │   │   └── handlers.py
-│   ├── response/
-│   │   └── actions.py
+│   ├── client/
+│   │   ├── detection_client.py
+│   │   └── stream_processor.py
 │   └── utils/
-├── frontend/
-│   ├── components/
-│   ├── pages/
-│   └── dashboard/
+│       ├── logger.py
+│       └── config.py
 ├── models/
-│   ├── trained_models/
-│   └── feature_extractors.py
+│   └── yolov8n.pt
 ├── tests/
-├── docs/
 ├── requirements.txt
 ├── docker-compose.yml
 ├── .env.example
@@ -135,56 +118,117 @@ IronVision/
 
 ## API Documentation
 
-### Authentication
-- `POST /api/auth/login` - User authentication
-- `POST /api/auth/logout` - User logout
-- `POST /api/auth/token-refresh` - Refresh access token
+### Object Detection Endpoint
 
-### Threats & Alerts
-- `GET /api/threats` - List detected threats
-- `GET /api/threats/:id` - Get threat details
-- `POST /api/threats/:id/respond` - Execute response action
-- `GET /api/alerts` - List security alerts
-- `PUT /api/alerts/:id` - Update alert status
+**POST** `/api/detect`
 
-### Monitoring
-- `GET /api/monitors` - List active monitors
-- `POST /api/monitors` - Create new monitor
-- `PUT /api/monitors/:id` - Update monitor
-- `DELETE /api/monitors/:id` - Remove monitor
-
-### Intelligence
-- `GET /api/intelligence` - Get threat intelligence
-- `GET /api/intelligence/feeds` - List intelligence feeds
-- `POST /api/intelligence/feeds` - Add new feed
-
-### System
-- `GET /api/health` - Health check
-- `GET /api/status` - System status
-- `GET /api/analytics` - System analytics
-
-For detailed API documentation, see [API Docs](./docs/API.md).
-
-## Machine Learning Models
-
-IronVision includes pre-trained ML models for threat detection:
-
-```python
-from ironvision.detection import ThreatAnalyzer
-
-analyzer = ThreatAnalyzer(model_path='./models/trained_model')
-threat_score = analyzer.analyze(data)
+```json
+{
+  "image": "base64_encoded_image",
+  "confidence_threshold": 0.5,
+  "iou_threshold": 0.4
+}
 ```
 
-### Model Training
+Response:
+```json
+{
+  "success": true,
+  "detections": [
+    {
+      "class": "person",
+      "confidence": 0.92,
+      "bbox": [x, y, width, height],
+      "class_id": 0
+    },
+    {
+      "class": "car",
+      "confidence": 0.87,
+      "bbox": [x, y, width, height],
+      "class_id": 2
+    }
+  ],
+  "inference_time_ms": 45
+}
+```
+
+### Batch Detection
+
+**POST** `/api/detect/batch`
+
+Process multiple images in one request for improved throughput.
+
+### Real-Time Stream
+
+**WebSocket** `/ws/detect`
+
+Stream continuous detections from video source.
+
+## YOLOv8 Model Variants
+
+| Model | Size | Speed | Accuracy |
+|-------|------|-------|----------|
+| YOLOv8n | ~3.2 MB | Fastest | Good |
+| YOLOv8s | ~11.2 MB | Fast | Very Good |
+| YOLOv8m | ~25.9 MB | Medium | Excellent |
+| YOLOv8l | ~52.9 MB | Slower | Superior |
+
+## Model Download
+
+Models are automatically downloaded on first run. To pre-download:
 
 ```bash
-# Train new models with your data
-python scripts/train_models.py --data ./data/ --output ./models/
-
-# Evaluate model performance
-python scripts/evaluate_model.py --model ./models/trained_model
+python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
 ```
+
+## Performance Metrics
+
+- **Inference Speed**: ~10-50ms per image (YOLOv8n on CPU)
+- **GPU Speed**: ~5-15ms per image (NVIDIA GPU)
+- **Model Size**: ~3.2MB (YOLOv8n)
+- **Memory Usage**: ~200-500MB (varies by model)
+
+## Training Custom Models
+
+```bash
+# Train on custom dataset
+python train.py --model yolov8n --data data.yaml --epochs 100
+
+# Validate model
+python validate.py --model runs/detect/train/weights/best.pt
+
+# Export model
+python export.py --model runs/detect/train/weights/best.pt --format onnx
+```
+
+## Docker Deployment
+
+```bash
+# Build Docker image
+docker build -t ironvision .
+
+# Run container
+docker run -p 8000:8000 ironvision
+
+# Using Docker Compose
+docker-compose up -d
+```
+
+## Performance Optimization
+
+- Use YOLOv8n for edge devices
+- Enable GPU acceleration when available
+- Adjust confidence threshold based on use case
+- Batch process when possible
+- Implement result caching
+
+## Supported Classes
+
+YOLOv8 is trained on COCO dataset (80 classes):
+- Persons, vehicles, animals
+- Accessories, sports items
+- Household objects, furniture
+- Food items and more
 
 ## Testing
 
@@ -195,83 +239,41 @@ pytest
 # Run with coverage
 pytest --cov=src tests/
 
-# Run specific test module
+# Test specific module
 pytest tests/test_detection.py
 
 # Integration tests
-pytest tests/integration/
+pytest tests/integration/ -v
 ```
-
-## Docker Deployment
-
-```bash
-# Build Docker image
-docker build -t ironvision .
-
-# Run with Docker Compose
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-## Monitoring & Logging
-
-Comprehensive logging system:
-
-```python
-import logging
-logger = logging.getLogger(__name__)
-
-logger.info("Threat detected")
-logger.warning("High risk activity")
-logger.error("Critical security event")
-```
-
-## Performance Optimization
-
-- Asynchronous processing for high-volume events
-- Efficient feature extraction
-- GPU support for ML inference
-- Caching for threat intelligence
-- Database optimization for large datasets
-
-## Security Considerations
-
-- Encrypted data at rest and in transit
-- Secure API authentication (OAuth 2.0)
-- Role-based access control (RBAC)
-- Audit logging for all actions
-- Regular security assessments
 
 ## Troubleshooting
 
-### Database Connection Issues
+### Model Download Failed
 ```bash
-# Check PostgreSQL is running
-psql -c "SELECT 1"
-
-# Update DATABASE_URL in .env
+# Manually download model
+wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt
 ```
 
-### ML Model Loading Error
+### GPU Not Detected
 ```bash
-# Verify model file exists
-ls -la models/
-
-# Check model compatibility
-python scripts/check_model.py
+# Check CUDA installation
+python -c "import torch; print(torch.cuda.is_available())"
 ```
 
-### High Memory Usage
+### Out of Memory
 ```bash
-# Adjust worker processes
-# Reduce batch size in configuration
-# Enable memory profiling
+# Use smaller model or reduce batch size
+export YOLO_MODEL=yolov8n
+export BATCH_SIZE=4
 ```
+
+## Security
+
+- Input validation on all API endpoints
+- Rate limiting to prevent abuse
+- Secure model storage
+- API authentication (optional)
+- HTTPS support
 
 ## Contributing
 
@@ -283,19 +285,12 @@ We welcome contributions! Please follow these steps:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Code Style
+## Code Style
 
 - Follow PEP 8 for Python code
 - Use Black for code formatting
-- ESLint for JavaScript/TypeScript
-- Write meaningful commit messages
-
-## Performance Benchmarks
-
-- Processes 50,000+ events per second
-- Sub-second threat detection latency
-- 99.9% detection accuracy on trained threats
-- Supports 1000+ concurrent monitoring sources
+- Type hints for functions
+- Comprehensive docstrings
 
 ## License
 
@@ -303,10 +298,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Thanks to all contributors
-- Community feedback and suggestions
-- Built with Python, TensorFlow, and Express.js
-- Inspired by industry-leading security platforms
+- Ultralytics for YOLOv8
+- COCO dataset creators
+- Computer vision community
+- Built with assistance from Claude AI
 
 ---
 
